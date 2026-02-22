@@ -292,6 +292,9 @@ const localIconPath = (group, id) => `assets/icons/${group}/${id}.png`;
 const TAB_ICON_URLS = {
   game: pxIcon("wand", "f59e0b"),
   worlds: pxIcon("map", "22d3ee"),
+  dungeon: pxIcon("sword", "f87171"),
+  magic: pxIcon("spark", "c084fc"),
+  quests: pxIcon("scroll", "34d399"),
   exams: pxIcon("book", "a78bfa"),
   equipment: pxIcon("shield-sword", "fda4af"),
   crafting: pxIcon("flask", "34d399"),
@@ -311,6 +314,9 @@ const UI_PIXEL_ICONS = {
   prestige: pxIcon("reload", "fdba74"),
   world: pxIcon("globe", "22d3ee"),
   exam: pxIcon("book", "a78bfa"),
+  dungeon: pxIcon("sword", "f87171"),
+  magic: pxIcon("spark", "c084fc"),
+  quest: pxIcon("scroll", "34d399"),
   equipment: pxIcon("shield", "fda4af"),
   potion: pxIcon("flask", "34d399"),
   box: pxIcon("archive", "fbbf24"),
@@ -673,24 +679,43 @@ const WORLDS = {
     ]},
 };
 
-// ===== 検定定義 =====
+// ===== 検定定義（ダンジョン到達型） =====
 const EXAMS = [
-  { id:1, name:"初級魔法士検定", emoji:"📜", requiredPrestige:3,  costCrystals:100,   costSouls:0,    bonus:"+20%生産",  bonusValue:0.2,
-    examMaterials: { magic_herb:5, magic_stone:3 }, reward: { box:"common_box", count:2 } },
-  { id:2, name:"中級魔法士検定", emoji:"📖", requiredPrestige:7,  costCrystals:500,   costSouls:10,   bonus:"+30%生産",  bonusValue:0.3,
-    examMaterials: { fairy_powder:5, spirit_tear:3, sacred_sap:2 }, reward: { box:"uncommon_box", count:2 } },
-  { id:3, name:"上級魔法士検定", emoji:"🔮", requiredPrestige:15, costCrystals:2000,  costSouls:50,   bonus:"+50%生産",  bonusValue:0.5,
-    examMaterials: { dragon_scale:5, crown_jewel:3, magic_steel:3 }, reward: { box:"rare_box", count:2 } },
-  { id:4, name:"魔法博士検定",   emoji:"👑", requiredPrestige:20, costCrystals:5000,  costSouls:200,  bonus:"+100%生産", bonusValue:1.0,
-    examMaterials: { angel_feather:5, stardust:4, divine_thread:3 }, reward: { box:"epic_box", count:2 } },
-  { id:5, name:"神級魔法士検定", emoji:"⚡", requiredPrestige:25, costCrystals:20000, costSouls:1000, bonus:"+200%生産", bonusValue:2.0,
-    examMaterials: { mystic_shard:5, genesis_flame:4, god_tear:3 }, reward: { box:"legendary_box", count:3 } },
-  { id:6, name:"冥術統括検定",   emoji:"🕯️", requiredPrestige:35, costCrystals:60000, costSouls:3500, bonus:"+250%生産", bonusValue:2.5,
-    examMaterials: { nether_ash:8, shade_essence:6, phantom_core:4 }, reward: { box:"legendary_box", count:4 } },
-  { id:7, name:"冥王継承検定",   emoji:"☠️", requiredPrestige:50, costCrystals:180000,costSouls:12000,bonus:"+350%生産", bonusValue:3.5,
-    examMaterials: { cursed_bone:10, abyss_ink:8, reaper_thread:6 }, reward: { box:"legendary_box", count:6 } },
-  { id:8, name:"星界覇者検定",   emoji:"🌌", requiredPrestige:70, costCrystals:500000,costSouls:40000,bonus:"+500%生産", bonusValue:5.0,
-    examMaterials: { astral_shard:10, chrono_sand:8, galaxy_tear:6 }, reward: { box:"legendary_box", count:10 } },
+  { id:1, name:"初級魔法士検定", requiredWorld:"human",   requiredWave:10, bonus:"+20%生産",  bonusValue:0.2, reward:{ box:"common_box", count:2 } },
+  { id:2, name:"中級魔法士検定", requiredWorld:"forest",  requiredWave:15, bonus:"+30%生産",  bonusValue:0.3, reward:{ box:"uncommon_box", count:2 } },
+  { id:3, name:"上級魔法士検定", requiredWorld:"kingdom", requiredWave:20, bonus:"+50%生産",  bonusValue:0.5, reward:{ box:"rare_box", count:2 } },
+  { id:4, name:"魔法博士検定",   requiredWorld:"heaven",  requiredWave:25, bonus:"+100%生産", bonusValue:1.0, reward:{ box:"epic_box", count:2 } },
+  { id:5, name:"神級魔法士検定", requiredWorld:"divine",  requiredWave:30, bonus:"+200%生産", bonusValue:2.0, reward:{ box:"legendary_box", count:3 } },
+  { id:6, name:"冥術統括検定",   requiredWorld:"abyss",   requiredWave:35, bonus:"+250%生産", bonusValue:2.5, reward:{ box:"legendary_box", count:4 } },
+  { id:7, name:"冥王継承検定",   requiredWorld:"abyss",   requiredWave:50, bonus:"+350%生産", bonusValue:3.5, reward:{ box:"legendary_box", count:6 } },
+  { id:8, name:"星界覇者検定",   requiredWorld:"astral",  requiredWave:60, bonus:"+500%生産", bonusValue:5.0, reward:{ box:"legendary_box", count:10 } },
+];
+
+const DUNGEON_WAVE_BOX_RATES = { common: 0.72, uncommon: 0.18, rare: 0.07, epic: 0.025, legendary: 0.005 };
+const DUNGEON_WORLD_SCALING = {
+  human:   { hp: 60,  atk: 8,   gain: 1.00 },
+  forest:  { hp: 170, atk: 20,  gain: 1.18 },
+  kingdom: { hp: 420, atk: 46,  gain: 1.36 },
+  heaven:  { hp: 960, atk: 98,  gain: 1.62 },
+  divine:  { hp: 2200,atk: 220, gain: 1.95 },
+  abyss:   { hp: 4200,atk: 430, gain: 2.30 },
+  astral:  { hp: 7000,atk: 730, gain: 2.75 },
+};
+const initDungeonProgress = () => Object.fromEntries(Object.keys(WORLDS).map(wid => [wid, { bestWave: 0, runs: 0 }]));
+
+const SPELLS = [
+  { id:"spell_arcane_bolt", name:"アーケインボルト", manaCost:0, cooldown:3, desc:"敵に攻撃力×2のダメージ", use:(ctx)=>({ enemyDamage: ctx.attack * 2 }) },
+  { id:"spell_heal", name:"癒しの光", manaCost:0, cooldown:10, desc:"最大HPの25%回復", use:(ctx)=>({ heal: ctx.maxHp * 0.25 }) },
+  { id:"spell_barrier", name:"結界", manaCost:0, cooldown:12, desc:"次の被ダメージを70%軽減", use:()=>({ barrier:0.7, barrierHits:1 }) },
+  { id:"spell_storm", name:"星嵐", manaCost:0, cooldown:16, desc:"敵最大HPの22%固定ダメージ", use:(ctx)=>({ enemyDamage: ctx.enemyMaxHp * 0.22 }) },
+];
+
+const QUESTS = [
+  { id:"q_tap_1", name:"指慣らし", desc:"総タップを1,000回にする", check:(s)=>s.totalClicks>=1000, reward:{ crystals:300 } },
+  { id:"q_shop_1", name:"買い物上手", desc:"ショップ購入を15回行う", check:(s)=>s.totalShopPurchases>=15, reward:{ crystals:600, souls:8 } },
+  { id:"q_dungeon_1", name:"迷宮の新人", desc:"ダンジョンを10ウェーブ突破", check:(s)=>s.bestWaveAll>=10, reward:{ box:"uncommon_box", count:1 } },
+  { id:"q_dungeon_2", name:"迷宮の猛者", desc:"ダンジョンを30ウェーブ突破", check:(s)=>s.bestWaveAll>=30, reward:{ box:"rare_box", count:1, souls:50 } },
+  { id:"q_craft_1", name:"錬金職人", desc:"ポーションを8回錬成", check:(s)=>s.totalCrafts>=8, reward:{ crystals:1200 } },
 ];
 
 const EQUIPMENT_SLOTS = [
@@ -701,7 +726,7 @@ const EQUIPMENT_SLOTS = [
 ];
 
 const EQUIPMENTS = [
-  { id:"eq_wand_apprentice", slot:"weapon", name:"見習いの星杖", desc:"クリック+20%", bonus:{ click:0.20 }, requiredExams:0, cost:{ crystals:120, souls:0, materials:{ magic_herb:12, magic_stone:8 } } },
+  { id:"eq_wand_apprentice", slot:"weapon", name:"見習いの杖", desc:"クリック+20%", bonus:{ click:0.20 }, requiredExams:0, cost:{ crystals:120, souls:0, materials:{ magic_herb:12, magic_stone:8 } } },
   { id:"eq_wand_dragon", slot:"weapon", name:"竜王の雷槍", desc:"クリック+140%", bonus:{ click:1.40 }, requiredExams:3, cost:{ crystals:12000, souls:350, materials:{ dragon_scale:20, thunder_crystal:12, crown_jewel:8 } } },
   { id:"eq_focus_sylph", slot:"focus", name:"風精の炉心", desc:"マナ生産+35%", bonus:{ mana:0.35 }, requiredExams:1, cost:{ crystals:900, souls:20, materials:{ fairy_powder:20, spirit_tear:12 } } },
   { id:"eq_focus_stellar", slot:"focus", name:"星界観測儀", desc:"マナ生産+220%", bonus:{ mana:2.20 }, requiredExams:7, cost:{ crystals:380000, souls:25000, materials:{ astral_shard:30, chrono_sand:24, galaxy_tear:14 } } },
@@ -1059,8 +1084,16 @@ function MagicClicker() {
   const [worldData, setWorldData] = useState(initWorldData());
   const [clicks, setClicks] = useState(0);
   const [totalClicks, setTotalClicks] = useState(0);
+  const [totalShopPurchases, setTotalShopPurchases] = useState(0);
+  const [totalCrafts, setTotalCrafts] = useState(0);
   const [equipmentOwned, setEquipmentOwned] = useState(initEquipmentOwned());
   const [equippedSlots, setEquippedSlots] = useState(initEquippedSlots());
+  const [enchantLevels, setEnchantLevels] = useState({});
+
+  const [dungeonProgress, setDungeonProgress] = useState(initDungeonProgress());
+  const [dungeonRun, setDungeonRun] = useState(null); // { worldId, wave, hp, maxHp, enemyHp, enemyMaxHp, enemyAtk, barrier, barrierHits }
+  const [spellCooldowns, setSpellCooldowns] = useState({});
+  const [questClaimed, setQuestClaimed] = useState([]);
 
   // 素材・ポーション・ボックス
   const [materials, setMaterials] = useState({});
@@ -1170,6 +1203,11 @@ function MagicClicker() {
     acc.click += Number(eq.bonus?.click || 0);
     acc.crystal += Number(eq.bonus?.crystal || 0);
     acc.soul += Number(eq.bonus?.soul || 0);
+    if (eq.slot === "armor") {
+      const lv = Number(enchantLevels[eq.id] || 0);
+      acc.mana += lv * 0.10;
+      acc.click += lv * 0.05;
+    }
     return acc;
   }, { mana:0, click:0, crystal:0, soul:0 });
   const equipmentMultipliers = {
@@ -1206,6 +1244,10 @@ function MagicClicker() {
   const upgradeManaPower = worldUpgrades.reduce((s,u)=>s+u.mps*u.owned,0) * upgradeBenefitMultiplier;
   const mpc = (1 + upgradeClickPower) * totalBonus * effectMultipliers.click * prestigeManaBonus * worldUnlockMultipliers.click * equipmentMultipliers.click;
   const mps = upgradeManaPower * totalBonus * effectMultipliers.mana * prestigeManaBonus * worldUnlockMultipliers.mana * equipmentMultipliers.mana;
+  const dungeonAttack = Math.max(4, mpc * 0.35);
+  const bestWaveAll = Math.max(0, ...Object.values(dungeonProgress).map(d => Number(d?.bestWave || 0)));
+  const questStats = { totalClicks, totalShopPurchases, totalCrafts, bestWaveAll };
+  const claimedQuestSet = new Set(questClaimed);
   const mana = getSharedManaFromWorldData(worldData);
   const totalManaAllWorlds = mana;
   const currentScore = Math.floor(
@@ -1275,7 +1317,8 @@ function MagicClicker() {
 
   stateRef.current = {
     crystals,totalCrystals,souls,totalSouls,prestige,prestigePts,passedExams,worldData,clicks,totalClicks,
-    materials,potionInventory,boxInventory,activeEffects,playerName,playerId,scoreboard,supabaseUrl,supabaseAnonKey,unlockedAchievements,equipmentOwned,equippedSlots
+    materials,potionInventory,boxInventory,activeEffects,playerName,playerId,scoreboard,supabaseUrl,supabaseAnonKey,unlockedAchievements,equipmentOwned,equippedSlots,
+    totalShopPurchases,totalCrafts,dungeonProgress,spellCooldowns,questClaimed,enchantLevels
   };
 
   useEffect(() => {
@@ -1286,6 +1329,8 @@ function MagicClicker() {
       setPrestige(saved.prestige||0); setPrestigePts(saved.prestigePts||0);
       setPassedExams(saved.passedExams||[]); setClicks(saved.clicks||0);
       setTotalClicks(saved.totalClicks ?? saved.clicks ?? 0);
+      setTotalShopPurchases(saved.totalShopPurchases || 0);
+      setTotalCrafts(saved.totalCrafts || 0);
       setMaterials(saved.materials||{});
       setPotionInventory(saved.potionInventory||{});
       setBoxInventory(saved.boxInventory||{});
@@ -1301,6 +1346,10 @@ function MagicClicker() {
       setUnlockedAchievements(Array.isArray(saved.unlockedAchievements) ? saved.unlockedAchievements : []);
       setEquipmentOwned({ ...initEquipmentOwned(), ...(saved.equipmentOwned || {}) });
       setEquippedSlots({ ...initEquippedSlots(), ...(saved.equippedSlots || {}) });
+      setEnchantLevels(saved.enchantLevels || {});
+      setDungeonProgress({ ...initDungeonProgress(), ...(saved.dungeonProgress || {}) });
+      setSpellCooldowns(saved.spellCooldowns || {});
+      setQuestClaimed(Array.isArray(saved.questClaimed) ? saved.questClaimed : []);
       if (saved.worldData) {
         setWorldData(prev => {
           const merged = {...prev};
@@ -1334,6 +1383,44 @@ function MagicClicker() {
   // エフェクト期限チェック
   useEffect(() => {
     const t = setInterval(() => setActiveEffects(prev=>prev.filter(e=>e.endsAt>Date.now())), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // ダンジョン戦闘: 敵の自動攻撃
+  useEffect(() => {
+    if (!dungeonRun) return;
+    const t = setInterval(() => {
+      setDungeonRun(prev => {
+        if (!prev) return prev;
+        let damage = prev.enemyAtk;
+        let barrierHits = prev.barrierHits || 0;
+        let barrier = prev.barrier || 0;
+        if (barrierHits > 0 && barrier > 0) {
+          damage = Math.max(1, Math.floor(damage * (1 - barrier)));
+          barrierHits -= 1;
+          if (barrierHits <= 0) barrier = 0;
+        }
+        const hp = prev.hp - damage;
+        if (hp > 0) return { ...prev, hp, barrier, barrierHits };
+        setTimeout(() => finishDungeonRun("dead"), 0);
+        return null;
+      });
+    }, 1400);
+    return () => clearInterval(t);
+  }, [dungeonRun]);
+
+  // スキルクールダウンの自然掃除
+  useEffect(() => {
+    const t = setInterval(() => {
+      const nowSec = Date.now() / 1000;
+      setSpellCooldowns(prev => {
+        const next = {};
+        Object.entries(prev || {}).forEach(([k, v]) => {
+          if (Number(v) > nowSec) next[k] = v;
+        });
+        return next;
+      });
+    }, 1000);
     return () => clearInterval(t);
   }, []);
 
@@ -1422,6 +1509,7 @@ function MagicClicker() {
 
   const buyUpgrade = (u, costNow) => {
     if (mana < costNow) return;
+    setTotalShopPurchases(v => v + 1);
     setWorldData(prev => {
       const current = getSharedManaFromWorldData(prev);
       const nextMana = Math.max(0, current - costNow);
@@ -1488,6 +1576,168 @@ function MagicClicker() {
     setEquippedSlots(prev => ({ ...prev, [slotId]: null }));
   };
 
+  const getEnchantCost = (equipId) => {
+    const lv = Number(enchantLevels[equipId] || 0);
+    return Math.max(5, Math.floor(5 * Math.pow(lv + 1, 2)));
+  };
+  const enchantArmor = (equipId) => {
+    const eq = EQUIPMENTS.find(e => e.id === equipId);
+    if (!eq || eq.slot !== "armor" || !equipmentOwned[equipId]) return;
+    const cost = getEnchantCost(equipId);
+    if (prestigePts < cost) {
+      setCraftResult({ success:false, msg:"転生ptが足りません" });
+      setTimeout(()=>setCraftResult(null),1500);
+      return;
+    }
+    setPrestigePts(v => v - cost);
+    setEnchantLevels(prev => ({ ...prev, [equipId]: Number(prev[equipId] || 0) + 1 }));
+    setCraftResult({ success:true, msg:`${eq.name} をエンチャント強化！` });
+    setTimeout(()=>setCraftResult(null),1800);
+  };
+
+  const rollDungeonWaveBox = () => {
+    const r = Math.random();
+    let acc = 0;
+    for (const [rarity, rate] of Object.entries(DUNGEON_WAVE_BOX_RATES)) {
+      acc += rate;
+      if (r <= acc) {
+        const byRarity = Object.values(POTION_BOXES).find(b => {
+          if (rarity === "common") return b.id === "common_box";
+          if (rarity === "uncommon") return b.id === "uncommon_box";
+          if (rarity === "rare") return b.id === "rare_box";
+          if (rarity === "epic") return b.id === "epic_box";
+          return b.id === "legendary_box";
+        });
+        return byRarity?.id || "common_box";
+      }
+    }
+    return "common_box";
+  };
+
+  const buildWaveEnemy = (worldId, wave) => {
+    const base = DUNGEON_WORLD_SCALING[worldId] || DUNGEON_WORLD_SCALING.human;
+    const hp = Math.floor(base.hp * Math.pow(1.20, Math.max(0, wave - 1)));
+    const atk = Math.floor(base.atk * Math.pow(1.16, Math.max(0, wave - 1)));
+    return { hp, atk };
+  };
+  const calcPlayerDungeonMaxHp = () => {
+    return Math.max(120, Math.floor((80 + prestige * 30 + Math.log10(Math.max(1, mana) + 1) * 100) * equipmentMultipliers.mana));
+  };
+  const addDungeonWaveRewards = (worldId, wave) => {
+    const base = DUNGEON_WORLD_SCALING[worldId] || DUNGEON_WORLD_SCALING.human;
+    const crystalGain = Math.max(1, Math.floor((2 + wave * 0.8) * base.gain * equipmentMultipliers.crystal));
+    const soulGain = wave >= 8 ? Math.max(0, Math.floor((wave - 6) * 0.12 * base.gain * equipmentMultipliers.soul)) : 0;
+    setCrystals(v => v + crystalGain);
+    setTotalCrystals(v => v + crystalGain);
+    if (soulGain > 0) {
+      setSouls(v => v + soulGain);
+      setTotalSouls(v => v + soulGain);
+    }
+    const worldMats = Object.values(MATERIALS).filter(m => m.world === worldId);
+    if (worldMats.length) {
+      const m = worldMats[Math.floor(Math.random() * worldMats.length)];
+      const amount = Math.max(1, Math.floor(1 + wave / 12));
+      setMaterials(prev => ({ ...prev, [m.id]: (prev[m.id] || 0) + amount }));
+    }
+    if (wave % 10 === 0) {
+      const boxId = rollDungeonWaveBox();
+      setBoxInventory(prev => ({ ...prev, [boxId]: (prev[boxId] || 0) + 1 }));
+      setCraftResult({ success:true, msg:`ダンジョン${wave}Wave突破！\n${POTION_BOXES[boxId]?.name || boxId} を獲得` });
+      setTimeout(()=>setCraftResult(null),2200);
+    }
+  };
+  const startDungeonRun = (worldId) => {
+    const maxHp = calcPlayerDungeonMaxHp();
+    const first = buildWaveEnemy(worldId, 1);
+    setDungeonProgress(prev => ({ ...prev, [worldId]: { ...(prev[worldId] || { bestWave:0, runs:0 }), runs: Number(prev[worldId]?.runs || 0) + 1 } }));
+    setDungeonRun({
+      worldId,
+      wave: 1,
+      hp: maxHp,
+      maxHp,
+      enemyHp: first.hp,
+      enemyMaxHp: first.hp,
+      enemyAtk: first.atk,
+      barrier: 0,
+      barrierHits: 0,
+    });
+  };
+  const finishDungeonRun = (reason = "retreat") => {
+    setDungeonRun(null);
+    if (reason === "dead") setSaveMsg("力尽きた…獲得物資を持って帰還");
+  };
+  const attackDungeonEnemy = () => {
+    if (!dungeonRun) return;
+    setDungeonRun(prev => {
+      if (!prev) return prev;
+      const nextEnemy = prev.enemyHp - dungeonAttack;
+      if (nextEnemy > 0) return { ...prev, enemyHp: nextEnemy };
+      const clearedWave = prev.wave;
+      addDungeonWaveRewards(prev.worldId, clearedWave);
+      setDungeonProgress(dp => {
+        const cur = dp[prev.worldId] || { bestWave:0, runs:0 };
+        return { ...dp, [prev.worldId]: { ...cur, bestWave: Math.max(Number(cur.bestWave || 0), clearedWave) } };
+      });
+      const nw = clearedWave + 1;
+      const en = buildWaveEnemy(prev.worldId, nw);
+      return { ...prev, wave: nw, enemyHp: en.hp, enemyMaxHp: en.hp, enemyAtk: en.atk };
+    });
+  };
+  const castSpell = (spellId) => {
+    if (!dungeonRun) return;
+    const spell = SPELLS.find(s => s.id === spellId);
+    if (!spell) return;
+    const nowSec = Date.now() / 1000;
+    if (Number(spellCooldowns[spellId] || 0) > nowSec) return;
+    setDungeonRun(prev => {
+      if (!prev) return prev;
+      const result = spell.use({
+        attack: dungeonAttack,
+        hp: prev.hp,
+        maxHp: prev.maxHp,
+        enemyHp: prev.enemyHp,
+        enemyMaxHp: prev.enemyMaxHp,
+      }) || {};
+      let hp = prev.hp;
+      let enemyHp = prev.enemyHp;
+      let barrier = prev.barrier || 0;
+      let barrierHits = prev.barrierHits || 0;
+      if (result.heal) hp = Math.min(prev.maxHp, hp + Number(result.heal));
+      if (result.enemyDamage) enemyHp -= Number(result.enemyDamage);
+      if (result.barrier) {
+        barrier = Math.max(barrier, Number(result.barrier));
+        barrierHits = Math.max(barrierHits, Number(result.barrierHits || 1));
+      }
+      if (enemyHp > 0) return { ...prev, hp, enemyHp, barrier, barrierHits };
+      const clearedWave = prev.wave;
+      addDungeonWaveRewards(prev.worldId, clearedWave);
+      setDungeonProgress(dp => {
+        const cur = dp[prev.worldId] || { bestWave:0, runs:0 };
+        return { ...dp, [prev.worldId]: { ...cur, bestWave: Math.max(Number(cur.bestWave || 0), clearedWave) } };
+      });
+      const nw = clearedWave + 1;
+      const en = buildWaveEnemy(prev.worldId, nw);
+      return { ...prev, hp, barrier, barrierHits, wave: nw, enemyHp: en.hp, enemyMaxHp: en.hp, enemyAtk: en.atk };
+    });
+    setSpellCooldowns(prev => ({ ...prev, [spellId]: nowSec + spell.cooldown }));
+  };
+  const claimQuest = (questId) => {
+    if (claimedQuestSet.has(questId)) return;
+    const q = QUESTS.find(x => x.id === questId);
+    if (!q || !q.check(questStats)) return;
+    const rw = q.reward || {};
+    if (rw.crystals) {
+      setCrystals(v => v + rw.crystals);
+      setTotalCrystals(v => v + rw.crystals);
+    }
+    if (rw.souls) {
+      setSouls(v => v + rw.souls);
+      setTotalSouls(v => v + rw.souls);
+    }
+    if (rw.box && rw.count) setBoxInventory(prev => ({ ...prev, [rw.box]: (prev[rw.box] || 0) + rw.count }));
+    setQuestClaimed(prev => [...prev, questId]);
+  };
+
   // ポーション錬成
   const craftPotion = (potion) => {
     for (const [matId,amount] of Object.entries(potion.recipe)) {
@@ -1499,6 +1749,7 @@ function MagicClicker() {
       return next;
     });
     setPotionInventory(prev=>({...prev,[potion.id]:(prev[potion.id]||0)+1}));
+    setTotalCrafts(v => v + 1);
     setCraftResult({success:true,msg:`${potion.name}を錬成しました！`});
     setTimeout(()=>setCraftResult(null),2000);
   };
@@ -1564,21 +1815,13 @@ function MagicClicker() {
 
   // 検定試験開始
   const startExam = (exam) => {
-    if (prestige<exam.requiredPrestige||crystals<exam.costCrystals||souls<exam.costSouls||passedExams.includes(exam.id)) return;
-    // 必要素材チェック
-    const missing = Object.entries(exam.examMaterials).find(([matId,amt])=>(materials[matId]||0)<amt);
-    if (missing) { alert(`素材が足りません: ${MATERIALS[missing[0]]?.name} が ${missing[1]} 個必要です`); return; }
-    setCrystals(p=>p-exam.costCrystals);
-    setSouls(p=>p-exam.costSouls);
-    setMaterials(prev => {
-      const next = { ...prev };
-      Object.entries(exam.examMaterials).forEach(([matId,amt]) => {
-        next[matId] = Math.max(0, (next[matId]||0) - amt);
-      });
-      return next;
-    });
-    setExamState({ exam, questions: generateExamQuestions(exam), currentQ:0, score:0, answer:"" });
-    setActiveTab("exam");
+    if (passedExams.includes(exam.id)) return;
+    const best = Number(dungeonProgress[exam.requiredWorld]?.bestWave || 0);
+    if (best < exam.requiredWave) return;
+    setPassedExams(prev=>[...prev, exam.id]);
+    const { box, count } = exam.reward || {};
+    if (box && count) setBoxInventory(prev=>({...prev, [box]:(prev[box]||0)+count}));
+    setSaveMsg(`${exam.name} 合格`);
   };
 
   const generateExamQuestions = (exam) => {
@@ -2049,6 +2292,9 @@ function MagicClicker() {
           {[
             {id:"game", icon:TAB_ICON_URLS.game, label:`${world.name}の儀式`},
             {id:"worlds", icon:TAB_ICON_URLS.worlds, label:"世界巡歴"},
+            {id:"dungeon", icon:TAB_ICON_URLS.dungeon, label:"ダンジョン"},
+            {id:"magic", icon:TAB_ICON_URLS.magic, label:"魔法"},
+            {id:"quests", icon:TAB_ICON_URLS.quests, label:"クエスト"},
             {id:"exams", icon:TAB_ICON_URLS.exams, label:"魔法試練"},
             {id:"equipment", icon:TAB_ICON_URLS.equipment, label:"装備"},
             {id:"crafting", icon:TAB_ICON_URLS.crafting, label:"錬金工房"},
@@ -2285,13 +2531,101 @@ function MagicClicker() {
           </div>
         )}
 
+        {/* ダンジョンタブ */}
+        {activeTab==="dungeon" && (
+          <div className="space-y-4">
+            <div className="world-panel rounded-lg p-4 border border-red-500">
+              <h3 className="font-bold text-red-300 mb-2 flex items-center gap-2"><PixelIcon src={UI_PIXEL_ICONS.dungeon} alt="dungeon" className="w-4 h-4" />{WORLDS[currentWorld].name}ダンジョン</h3>
+              {!dungeonRun ? (
+                <div>
+                  <p className="text-sm opacity-80 mb-2">ウェーブ制。倒れた場合もその挑戦で獲得した物資は保持されます。</p>
+                  <div className="text-xs text-cyan-300 mb-3">最高到達: Wave {dungeonProgress[currentWorld]?.bestWave || 0} / 挑戦回数: {dungeonProgress[currentWorld]?.runs || 0}</div>
+                  <button onClick={()=>startDungeonRun(currentWorld)} className="px-4 py-2 bg-red-500 hover:bg-red-400 rounded font-bold text-black">挑戦開始</button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Wave {dungeonRun.wave}</span>
+                    <button onClick={()=>finishDungeonRun("retreat")} className="px-2 py-1 bg-gray-700 rounded text-xs">撤退</button>
+                  </div>
+                  <div className="text-xs">プレイヤーHP {fmt(dungeonRun.hp)} / {fmt(dungeonRun.maxHp)}</div>
+                  <div className="w-full h-2 bg-gray-800 rounded"><div className="h-2 bg-green-400 rounded" style={{width:`${Math.max(0,Math.min(100,dungeonRun.hp/dungeonRun.maxHp*100))}%`}} /></div>
+                  <div className="text-xs">敵HP {fmt(dungeonRun.enemyHp)} / {fmt(dungeonRun.enemyMaxHp)}（攻撃 {fmt(dungeonRun.enemyAtk)}）</div>
+                  <div className="w-full h-2 bg-gray-800 rounded"><div className="h-2 bg-red-400 rounded" style={{width:`${Math.max(0,Math.min(100,dungeonRun.enemyHp/dungeonRun.enemyMaxHp*100))}%`}} /></div>
+                  <div className="text-xs text-purple-300">攻撃力: {fmt(dungeonAttack)} / 結界: {dungeonRun.barrierHits>0?`${Math.floor((dungeonRun.barrier||0)*100)}%軽減(${dungeonRun.barrierHits}回)`:"なし"}</div>
+                  <button onClick={attackDungeonEnemy} className="px-4 py-2 bg-yellow-500 hover:bg-yellow-400 rounded font-bold text-black">攻撃する</button>
+                </div>
+              )}
+            </div>
+            <div className="world-panel rounded-lg p-4 border border-amber-500">
+              <div className="text-xs text-amber-300">10ウェーブごとに宝箱獲得（高レアほど低確率）</div>
+              <div className="text-xs opacity-80 mt-1">
+                Common {(DUNGEON_WAVE_BOX_RATES.common*100).toFixed(1)}% / Uncommon {(DUNGEON_WAVE_BOX_RATES.uncommon*100).toFixed(1)}% / Rare {(DUNGEON_WAVE_BOX_RATES.rare*100).toFixed(1)}% / Epic {(DUNGEON_WAVE_BOX_RATES.epic*100).toFixed(1)}% / Legendary {(DUNGEON_WAVE_BOX_RATES.legendary*100).toFixed(1)}%
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 魔法タブ */}
+        {activeTab==="magic" && (
+          <div className="space-y-3">
+            <p className="text-xs opacity-70">魔法はダンジョン戦闘中のみ使用できます。再使用にはクールダウンが必要です。</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {SPELLS.map(sp => {
+                const nowSec = Date.now() / 1000;
+                const remain = Math.max(0, Math.ceil((Number(spellCooldowns[sp.id] || 0) - nowSec)));
+                const disabled = !dungeonRun || remain > 0;
+                return (
+                  <div key={sp.id} className="bg-black bg-opacity-35 rounded-lg border border-purple-500 p-3">
+                    <div className="font-bold text-purple-200">{sp.name}</div>
+                    <div className="text-xs opacity-75">{sp.desc}</div>
+                    <div className="text-xs text-cyan-300 mt-1">CD: {sp.cooldown}s {remain>0?`/ 残り ${remain}s`:""}</div>
+                    <button onClick={()=>castSpell(sp.id)} disabled={disabled}
+                      className={`mt-2 px-3 py-1.5 rounded text-sm font-bold ${disabled?"bg-gray-700 text-gray-400 cursor-not-allowed":"bg-purple-500 hover:bg-purple-400 text-black"}`}>
+                      発動
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* クエストタブ */}
+        {activeTab==="quests" && (
+          <div className="space-y-3">
+            {QUESTS.map(q => {
+              const done = q.check(questStats);
+              const claimed = claimedQuestSet.has(q.id);
+              return (
+                <div key={q.id} className={`rounded-lg border p-3 ${claimed?"border-green-500 bg-green-900 bg-opacity-25":"border-cyan-500 bg-black bg-opacity-35"}`}>
+                  <div className="font-bold">{q.name}</div>
+                  <div className="text-xs opacity-75">{q.desc}</div>
+                  <div className="text-xs mt-1 text-yellow-300">
+                    報酬: {q.reward.crystals?`結晶${fmt(q.reward.crystals)} `:""}{q.reward.souls?`魂${fmt(q.reward.souls)} `:""}{q.reward.box?`${POTION_BOXES[q.reward.box]?.name || q.reward.box}×${q.reward.count || 1}`:""}
+                  </div>
+                  {claimed ? (
+                    <div className="text-xs text-green-300 mt-2">受取済み</div>
+                  ) : (
+                    <button onClick={()=>claimQuest(q.id)} disabled={!done}
+                      className={`mt-2 px-3 py-1.5 rounded text-sm font-bold ${done?"bg-cyan-400 hover:bg-cyan-300 text-black":"bg-gray-700 text-gray-400 cursor-not-allowed"}`}>
+                      報酬を受け取る
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {/* 検定タブ */}
         {activeTab==="exams" && (
           <div className="space-y-3">
-            <p className="text-center text-xs opacity-60">転生回数・通貨・素材を消費して受験。3問中2問正解で合格！</p>
+            <p className="text-center text-xs opacity-60">検定は「指定世界のダンジョン到達Wave」で合格できます。</p>
             {EXAMS.map(exam=>{
               const passed=passedExams.includes(exam.id);
-              const canTake=prestige>=exam.requiredPrestige&&crystals>=exam.costCrystals&&souls>=exam.costSouls&&!passed;
+              const best = Number(dungeonProgress[exam.requiredWorld]?.bestWave || 0);
+              const canTake = best >= exam.requiredWave && !passed;
               return (
                 <div key={exam.id} className={`p-4 rounded-lg border-2 ${passed?"bg-green-900 border-green-400":canTake?"bg-yellow-900 border-yellow-400":"bg-gray-900 border-gray-700 opacity-70"}`}>
                   <div className="flex items-center justify-between flex-wrap gap-2">
@@ -2301,15 +2635,11 @@ function MagicClicker() {
                         <div className="font-bold">{exam.name}</div>
                         <div className="text-xs text-green-300">ボーナス: {exam.bonus}</div>
                         <div className="text-xs mt-1 space-x-2 flex flex-wrap gap-1">
-                          <span className={prestige>=exam.requiredPrestige?"text-green-300":"text-red-300"}>転生{exam.requiredPrestige}回</span>
-                          {exam.costCrystals>0&&<span className={`${crystals>=exam.costCrystals?"text-cyan-300":"text-red-300"} flex items-center gap-1`}><PixelIcon src={UI_PIXEL_ICONS.crystal} alt="crystal" className="w-3.5 h-3.5" />{fmt(exam.costCrystals)}</span>}
-                          {exam.costSouls>0&&<span className={`${souls>=exam.costSouls?"text-purple-300":"text-red-300"} flex items-center gap-1`}><PixelIcon src={UI_PIXEL_ICONS.soul} alt="soul" className="w-3.5 h-3.5" />{fmt(exam.costSouls)}</span>}
+                          <span className="text-cyan-300">{WORLDS[exam.requiredWorld]?.name} ダンジョン</span>
+                          <span className={best>=exam.requiredWave?"text-green-300":"text-red-300"}>到達Wave {best} / {exam.requiredWave}</span>
                         </div>
                         <div className="text-xs mt-1 opacity-70">
-                          必要素材: {Object.entries(exam.examMaterials).map(([matId,amt])=>`${MATERIALS[matId]?.name}×${amt}`).join(" ")}
-                        </div>
-                        <div className="text-xs mt-1 opacity-70">
-                          報酬: {POTION_BOXES[exam.reward.box]?.name}×{exam.reward.count}
+                          合格報酬: {POTION_BOXES[exam.reward.box]?.name}×{exam.reward.count}
                         </div>
                       </div>
                     </div>
@@ -2413,6 +2743,18 @@ function MagicClicker() {
                         </button>
                       )}
                     </div>
+                    {eq.slot === "armor" && owned && (
+                      <div className="mt-2 pt-2 border-t border-pink-900 text-xs">
+                        <div className="text-pink-200">エンチャントLv {enchantLevels[eq.id] || 0}（効果: マナ+{((enchantLevels[eq.id]||0)*10)}% / クリック+{((enchantLevels[eq.id]||0)*5)}%）</div>
+                        <button
+                          onClick={()=>enchantArmor(eq.id)}
+                          disabled={prestigePts < getEnchantCost(eq.id)}
+                          className={`mt-1 px-2 py-1 rounded font-bold ${prestigePts >= getEnchantCost(eq.id) ? "bg-purple-500 hover:bg-purple-400 text-black" : "bg-gray-700 text-gray-400 cursor-not-allowed"}`}
+                        >
+                          エンチャント（{getEnchantCost(eq.id)}pt）
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })}
